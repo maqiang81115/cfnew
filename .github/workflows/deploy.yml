@@ -45,8 +45,11 @@ jobs:
           HTTP_CODE=$(curl -sS -o /tmp/cf_resp.json -w '%{http_code}' -X PUT \
             "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CF_ACCOUNT_ID }}/workers/scripts/cfnew" \
             -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
-            -H "Content-Type: application/javascript" \
-            --data-binary "@明文源吗")
+            -F 'metadata={"main_module":"worker.js","compatibility_date":"2026-09-29"};type=application/json' \
+            -F "worker.js=@明文源吗;type=application/javascript+module")
           cat /tmp/cf_resp.json
           echo "HTTP $HTTP_CODE"
           grep -q '"success":true' /tmp/cf_resp.json
+          sleep 5
+          curl -sS "https://cfnew.q1398579121.workers.dev/" | grep -q "终端"
+          echo "smoke test OK"
