@@ -30,7 +30,7 @@ jobs:
           if git rev-parse --verify upstream/main >/dev/null 2>&1; then UB=main; else UB=master; fi
           echo "upstream branch: $UB"
           git checkout "upstream/$UB" -- '明文源吗'
-          if git diff --quiet -- '明文源吗'; then
+          if git diff --cached --quiet -- '明文源吗'; then
             echo "no upstream changes"
           else
             git config user.name 'github-actions[bot]'
