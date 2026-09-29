@@ -42,11 +42,12 @@ jobs:
       - name: Deploy to Cloudflare Workers
         run: |
           set -e
+          cp '明文源吗' worker.js
           HTTP_CODE=$(curl -sS -o /tmp/cf_resp.json -w '%{http_code}' -X PUT \
             "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CF_ACCOUNT_ID }}/workers/scripts/cfnew" \
             -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
             -F 'metadata={"main_module":"worker.js","compatibility_date":"2026-09-29"};type=application/json' \
-            -F "worker.js=@明文源吗;type=application/javascript+module")
+            -F "worker.js=@worker.js;type=application/javascript+module")
           cat /tmp/cf_resp.json
           echo "HTTP $HTTP_CODE"
           grep -q '"success":true' /tmp/cf_resp.json
