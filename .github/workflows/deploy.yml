@@ -1,14 +1,16 @@
 name: Sync upstream and deploy to Cloudflare
 
+
 on:
   push:
     branches: [main]
     paths:
-      - '明文源吗'
       - '.github/workflows/deploy.yml'
   schedule:
     - cron: '0 3 * * *'
+
   workflow_dispatch:
+
 
 jobs:
   sync-and-deploy:
@@ -21,24 +23,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Sync 明文源吗 from upstream
-        run: |
-          set -e
-          git remote remove upstream 2>/dev/null || true
-          git remote add upstream https://github.com/byJoey/cfnew.git
-          git fetch upstream
-          if git rev-parse --verify upstream/main >/dev/null 2>&1; then UB=main; else UB=master; fi
-          echo "upstream branch: $UB"
-          git checkout "upstream/$UB" -- '明文源吗'
-          if git diff --cached --quiet -- '明文源吗'; then
-            echo "no upstream changes"
-          else
-            git config user.name 'github-actions[bot]'
-            git config user.email 'github-actions[bot]@users.noreply.github.com'
-            git add '明文源吗'
-            git commit -m 'sync: update 明文源吗 from upstream (byJoey/cfnew)'
-            git push origin HEAD:main
-          fi
+
+      # DISABLED: auto-sync of upstream '明文源吗' is turned off because upstream v3.1
+      # (byJoey/cfnew) ships a fatal ES Module syntax error (bare `return` at module top
+      # level) that makes the deployed Worker return HTTP 500. Local content deploys as-is.
+      # - name: Sync 明文源吗 from upstream
+      #   run: |
+      #     set -e
+      #     git remote remove upstream 2>/dev/null || true
+      #     git remote add upstream https://github.com/byJoey/cfnew.git
+      #     git fetch upstream
+      #     if git rev-parse --verify upstream/main >/dev/null 2>&1; then UB=main; else UB=master; fi
+      #     echo "upstream branch: $UB"
+      #     git checkout "upstream/$UB" -- '明文源吗'
+      #     if git diff --cached --quiet -- '明文源吗'; then
+      #       echo "no upstream changes"
+      #     else
+      #       git config user.name 'github-actions[bot]'
+      #       git config user.email 'github-actions[bot]@users.noreply.github.com'
+      #       git add '明文源吗'
+      #       git commit -m 'sync: update 明文源吗 from upstream (byJoey/cfnew)'
+      #       git push origin HEAD:main
+      #     fi
+
 
       - name: Deploy to Cloudflare Workers
         run: |
